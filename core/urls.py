@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from cookbook_app import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('cookbook_app.urls')),
+        path('show_recipes_without_product/', views.show_recipes_without_product, name='show_recipes_without_product'),
+
 ]

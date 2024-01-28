@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, render
 
 from cookbook_app.models import Product, Recipe, RecipeProduct
 
@@ -16,4 +17,25 @@ def add_product_to_recipe(request):
         else:
             RecipeProduct.objects.create(recipe=recipe, product=product, weight=weight)   
         
-    return render(request, 'add_product_to_recipe.html')
+    return HttpResponse('Product added to recipe')
+
+
+def cook_recipe(request):
+    recipe_id = request.GET.get('recipe_id')
+
+    if not recipe_id:
+        return HttpResponseBadRequest('recipe_id parameter is required')
+
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    for product in recipe.ingredients.all():
+        product.times_cooked += 1
+        product.save()
+
+    return HttpResponse('Recipe successfully cooked')
+
+
+def show_recipes_without_product(request):
+    product_id = request.GET.get('product_id')
+    recipes = Recipe.objects.exclude(recipeproduct__product__id=product_id).exclude(recipeproduct__weight__gte=10)
+    return render(request, 'show_recipes_without_product.html', {'recipes': recipes})
