@@ -1,3 +1,4 @@
-!**/migrations/__init__.py
-**sqlite3
 .vscode
+!**/migrations/__init__.py
+*sqlite3
+**/__pycache__/
