@@ -21,6 +21,6 @@ from cookbook_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-        path('show_recipes_without_product/', views.show_recipes_without_product, name='show_recipes_without_product'),
+    path('', include('cookbook_app.urls')),
 
 ]

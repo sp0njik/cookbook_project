@@ -42,7 +42,7 @@ def cook_recipe(request):
 
 def show_recipes_without_product(request):
     if request.method == "GET":
-        product_id = request.GET.get("product_id")
+        product_id: str = request.GET.get("product_id")
         if not product_id or not Product.objects.filter(id=product_id).exists():
             return HttpResponseBadRequest(status=400)
         recipes = Recipe.objects.only("name").exclude(

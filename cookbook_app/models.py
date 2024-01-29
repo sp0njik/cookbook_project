@@ -21,7 +21,7 @@ class Recipe(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.name 
 
 
 class RecipeProduct(models.Model):
@@ -29,5 +29,4 @@ class RecipeProduct(models.Model):
     product: Product = models.ForeignKey(Product, on_delete=models.CASCADE)
     weight: int = models.IntegerField(verbose_name="Вес в граммах")
 
-    def __str__(self):
-        return f'{self.recipe} - {self.product} - {self.weight}гр.'
+
