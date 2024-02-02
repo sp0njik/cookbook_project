@@ -6,7 +6,7 @@ from django.db import transaction
 from cookbook_app.models import Product, Recipe, RecipeProduct
 
 
-def add_product_to_recipe(request):
+def add_product_to_recipe(request): # метод добавления продукта в рецепт
     if request.method == "GET":
         recipe_id = request.GET.get("recipe_id")
         product_id = request.GET.get("product_id")
@@ -14,11 +14,14 @@ def add_product_to_recipe(request):
         if RecipeProduct.objects.filter(
             recipe_id=recipe_id, product_id=product_id
         ).exists():
-            recipies_data = RecipeProduct.objects.filter(
-                recipe_id=recipe_id, product_id=product_id
-            ).select_for_update()
             with transaction.atomic():
-                recipies_data.update(weight=F("weight") + int(weight))
+                recipies_data = RecipeProduct.objects.select_for_update().get(recipe_id=recipe_id, product_id=product_id)
+                recipies_data.weight = F("weight") + int(weight)
+                recipies_data.save()
+                # recipies_data = RecipeProduct.objects.select_for_update().filter(
+                #     recipe_id=recipe_id, product_id=product_id
+                # )
+                # recipies_data.update(weight=F("weight") + int(weight))
         else:
             RecipeProduct.objects.create(
                 recipe_id=recipe_id, product_id=product_id, weight=weight
@@ -27,16 +30,16 @@ def add_product_to_recipe(request):
     return HttpResponse(status=405)
 
 
-def cook_recipe(request):
+def cook_recipe(request):  # метод который обновляет кол-во приготовленных рецептов
     if request.method == "GET":
         recipe_id = request.GET.get("recipe_id")
 
     if not recipe_id:
         return HttpResponseBadRequest(status=400)
-
-    products = Product.objects.filter(recipe__id=recipe_id).select_for_update()
-    with transaction.atomic():
-        products.update(times_cooked=F("times_cooked") + 1)
+    products = Product.objects.filter(recipe__id=recipe_id)
+    # products = Product.objects.filter(recipe__id=recipe_id).select_for_update()
+    # with transaction.atomic():
+    #     products.update(times_cooked=F("times_cooked") + 1)
     return HttpResponse(status=200)
 
 
